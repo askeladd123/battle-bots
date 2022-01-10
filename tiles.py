@@ -86,5 +86,5 @@ class Tiles:
 
     X = 0
     Y = 0
-    WIDTH = 32
-    HEIGHT = 16
+    WIDTH = 24
+    HEIGHT = 12

@@ -13,6 +13,8 @@ from tiles import Tiles
 
 speed = 1000
 functions = []
+players = []
+bullet_positions = []
 
 
 def register_ai(function):
@@ -24,12 +26,14 @@ class Input:
         self._agent = player
         self.position = player.position
         self.game_state = deepcopy(player.tiles.array)
+        self.bullet_positions = deepcopy(bullet_positions)
+        self.ammo = player.ammo
 
-        #TODO
         self.enemy_positions = []
-
-        #TODO
-        self.bullet_positions = []
+        global players
+        for player in players:
+            self.enemy_positions.append(player.position)
+        self.enemy_positions.remove(self._agent.position)
 
     def is_legal(self, direction):
         """
@@ -48,24 +52,8 @@ class Input:
         if direction == "left":
             return self._agent.tiles.is_empty(self._agent.position[0] - 1, self._agent.position[1])
 
+        return False
 
-class Output:
-    def __init__(self, player):
-        self._agent = player
-
-    def move(self, direction):
-        """
-        :param direction: "up", "down", "right", "left"
-        """
-        self._agent.move(direction)
-
-    def shoot(self, direction=None):
-        """
-        Fires a deadly bullet straight forward,
-        (unless you specify direction).
-        :param direction: "up", "down", "right", "left"
-        """
-        self._agent.shoot(direction)
 
 def start(real_players=0):
     if len(functions) == 0:
@@ -82,8 +70,6 @@ def start(real_players=0):
 
     pygame.init()
     pygame.display.set_caption("BattleBots")
-
-    clock = pygame.time.Clock()
     pygame.time.set_timer(pygame.USEREVENT, speed)
 
     # create a surface on screen that has the size of 240 x 180
@@ -93,16 +79,17 @@ def start(real_players=0):
 
     # ok
     tiles = Tiles(WIDTH, HEIGHT)
-    players = []
     animations = []
     impact_locations = []
 
+    global players
     for function in functions:
         players.append(Player(function, tiles))
 
     for player in players:
         player.position = random_legal_position(tiles)
-        player.font = pygame.font.SysFont(None, 24).render(str(players.index(player) + 1), True, pygame.Color(255, 255, 255))
+        tiles.register(player.position)
+        player.font = pygame.font.SysFont(None, 24).render(str(players.index(player) + 1), True, pygame.Color(190, 200, 180))
 
     pang = Animation((tiles.TILE_WIDTH, tiles.TILE_HEIGHT))
     pang.add_frame("res/pang/0000.png")
@@ -114,6 +101,7 @@ def start(real_players=0):
     pang.speed = 0.05
 
     bullet_image = pygame.transform.scale(pygame.image.load("res/kule.png"), (tiles.TILE_WIDTH, tiles.TILE_HEIGHT))
+    global bullet_positions
     bullet_positions = [random_legal_position(tiles)]
     counter = 0
 
@@ -134,9 +122,24 @@ def start(real_players=0):
                         bullet_positions.append(random_legal_position(tiles))
                 else:
                     counter += 1
-
                 for player in players:
-                    player.function(Input(player), Output(player))
+
+                    command = player.function(Input(player))
+                    if command is None:
+                        continue
+                    command = command.lower()
+
+
+                    if command in ["up", "down", "right", "left"]:
+                        player.move(command)
+
+                    if "shoot" in command:
+                        for direction in ["up", "down", "right", "left", "straight"]:
+                            if direction == "straight":
+                                player.shoot()
+                            if direction in command:
+                                player.shoot(direction)
+                                break
 
             if event.type == pygame.KEYDOWN:
                 if 0 < len(players) and (real_players == 1 or real_players == 2):
