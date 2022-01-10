@@ -1,4 +1,5 @@
 import pygame
+import random
 
 def get_unit_vector(angle):
     if angle == 0:
@@ -20,6 +21,14 @@ def get_neighbours(vector):
     neighbours.append([vector[0], vector[1] + 1])
     neighbours.append([vector[0], vector[1] - 1])
     return neighbours
+
+
+def random_legal_position(tiles):
+    position = [random.randint(1, tiles.WIDTH - 1), random.randint(1, tiles.HEIGHT - 1)]
+    while not tiles.is_empty(position[0], position[1]):
+        position = [random.randint(1, tiles.WIDTH - 1), random.randint(1, tiles.HEIGHT - 1)]
+    return position
+
 
 class Animation:
     def __init__(self, size=(100, 100)):

@@ -1,20 +1,24 @@
 import pygame
 from common import get_unit_vector
-import animation
 
 
 class Player:
-    def __init__(self, tiles):
+    def __init__(self, function, tiles):
+        self.function = function
         self.image = pygame.transform.scale(pygame.image.load("res/tank.png"), (tiles.TILE_WIDTH, tiles.TILE_HEIGHT))
         self.position = [1, 1]
         self.tiles = tiles
         self.rotation = 0
         self.impact_location = (0, 0)
         self.has_shot = False
+        self.font = None
+        self.ammo = 0
+        self.ammo_max = 1
 
     def draw(self, display):
         self.image = pygame.transform.rotate(self.image, self.rotation)
         display.blit(self.image, self.tiles.world_position(self.position))
+        display.blit(self.font, self.tiles.world_position(self.position))
         self.image = pygame.transform.rotate(self.image, -self.rotation)
 
     def move(self, string):
@@ -46,6 +50,10 @@ class Player:
         return location[0] * self.tiles.TILE_WIDTH, location[1] * self.tiles.TILE_HEIGHT
 
     def shoot(self, string=None):
+        if self.ammo == 0:
+            print("I'm sorry, but you're out of ammo. ")
+            return
+        self.ammo -= 1
         if string is not None:
             self.rotate(string)
 

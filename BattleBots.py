@@ -1,4 +1,5 @@
 import pygame
+import random
 from sys import exit
 from copy import copy
 from copy import deepcopy
@@ -6,6 +7,8 @@ from copy import deepcopy
 from common import get_neighbours
 from common import get_unit_vector
 from common import Animation
+from common import random_legal_position
+from player import Player
 from tiles import Tiles
 
 speed = 1000
@@ -56,7 +59,6 @@ class Output:
         """
         self._agent.move(direction)
 
-    # Insert forklaring
     def shoot(self, direction=None):
         """
         Fires a deadly bullet straight forward,
@@ -79,9 +81,6 @@ def start(real_players=0):
         real_players = 2
 
     pygame.init()
-    # load and set the logo
-    # logo = pygame.image.load("logo32x32.png")
-    # pygame.display.set_icon(logo)
     pygame.display.set_caption("BattleBots")
 
     clock = pygame.time.Clock()
@@ -92,16 +91,18 @@ def start(real_players=0):
     WIDTH = HEIGHT * 2
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
 
-    # define a variable to control the main loop
-    running = True
-
-    # ===
-
+    # ok
     tiles = Tiles(WIDTH, HEIGHT)
     players = []
+    animations = []
+    impact_locations = []
 
     for function in functions:
         players.append(Player(function, tiles))
+
+    for player in players:
+        player.position = random_legal_position(tiles)
+        player.font = pygame.font.SysFont(None, 24).render(str(players.index(player) + 1), True, pygame.Color(255, 255, 255))
 
     pang = Animation((tiles.TILE_WIDTH, tiles.TILE_HEIGHT))
     pang.add_frame("res/pang/0000.png")
@@ -112,10 +113,12 @@ def start(real_players=0):
     pang.rotation_offset = -90
     pang.speed = 0.05
 
-    animations = []
-    impact_locations = []
+    bullet_image = pygame.transform.scale(pygame.image.load("res/kule.png"), (tiles.TILE_WIDTH, tiles.TILE_HEIGHT))
+    bullet_positions = [random_legal_position(tiles)]
+    counter = 0
 
     # main loop
+    running = True
     while running:
         # event handling, gets all event from the event queue
         for event in pygame.event.get():
@@ -125,11 +128,18 @@ def start(real_players=0):
                 running = False
 
             if event.type == pygame.USEREVENT:
+                if 8 < counter:
+                    counter = 0
+                    if len(bullet_positions) < len(players):
+                        bullet_positions.append(random_legal_position(tiles))
+                else:
+                    counter += 1
+
                 for player in players:
                     player.function(Input(player), Output(player))
 
             if event.type == pygame.KEYDOWN:
-                if real_players == 1 or real_players == 2:
+                if 0 < len(players) and (real_players == 1 or real_players == 2):
                     if event.key == pygame.K_UP:
                         players[0].move("up")
                     if event.key == pygame.K_DOWN:
@@ -156,9 +166,17 @@ def start(real_players=0):
         screen.fill((30, 20, 20))
 
         tiles.draw(screen)
+        for position in bullet_positions:
+            screen.blit(bullet_image, tiles.world_position(position))
 
         for player in players:
             player.draw(screen)
+
+            if player.ammo < player.ammo_max and player.position in bullet_positions:
+                player.ammo += 1
+                bullet_positions.remove(player.position)
+
+
             if player.has_shot:
                 impact = player.extract_impact_location()
 
@@ -171,8 +189,10 @@ def start(real_players=0):
 
         for location in impact_locations:
             neighbours = get_neighbours(location)
+            neighbours.append(list(location))
             for player in players:
-                if player.position in neighbours and 1 < len(players):
+                if player.position in neighbours:# and 1 < len(players):
+                    tiles.unregister(player.position)
                     players.remove(player)
             impact_locations.remove(location)
 
@@ -184,79 +204,3 @@ def start(real_players=0):
                 animation.move()
 
         pygame.display.update()
-
-
-class Player:
-    def __init__(self, function, tiles):
-        self.function = function
-        self.image = pygame.transform.scale(pygame.image.load("res/tank.png"), (tiles.TILE_WIDTH, tiles.TILE_HEIGHT))
-        self.position = [1, 1]
-        self.tiles = tiles
-        self.rotation = 0
-        self.impact_location = (0, 0)
-        self.has_shot = False
-
-    def draw(self, display):
-        self.image = pygame.transform.rotate(self.image, self.rotation)
-        display.blit(self.image, self.tiles.world_position(self.position))
-        self.image = pygame.transform.rotate(self.image, -self.rotation)
-
-    def move(self, string):
-        self.tiles.unregister(self.position)
-        if string == "up":
-            if self.tiles.is_empty(self.position[0], self.position[1] - 1):
-                self.position[1] -= 1
-            self.rotation = 0
-        if string == "down":
-            if self.tiles.is_empty(self.position[0], self.position[1] + 1):
-                self.position[1] += 1
-            self.rotation = 180
-        if string == "left":
-            if self.tiles.is_empty(self.position[0] - 1, self.position[1]):
-                self.position[0] -= 1
-            self.rotation = 90
-        if string == "right":
-            if self.tiles.is_empty(self.position[0] + 1, self.position[1]):
-                self.position[0] += 1
-            self.rotation = 270
-        self.tiles.register(self.position)
-
-    def extract_impact_location(self):
-        self.has_shot = False
-        return self.impact_location
-
-    def extract_impact_world_location(self):
-        location = self.extract_impact_location()
-        return location[0] * self.tiles.TILE_WIDTH, location[1] * self.tiles.TILE_HEIGHT
-
-    def shoot(self, string=None):
-        if string is not None:
-            self.rotate(string)
-
-        direction = get_unit_vector(self.rotation)
-        x = self.position[0]
-        y = self.position[1]
-
-        x += direction[0]
-        y += direction[1]
-        while self.tiles.is_empty(x, y):
-            x += direction[0]
-            y += direction[1]
-        x -= direction[0]
-        y -= direction[1]
-
-        self.impact_location = (x, y)
-        self.has_shot = True
-
-    def rotate(self, string):
-        if string == "up":
-            self.rotation = 0
-
-        if string == "down":
-            self.rotation = 180
-
-        if string == "left":
-            self.rotation = 90
-
-        if string == "right":
-            self.rotation = 270
