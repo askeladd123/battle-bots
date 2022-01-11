@@ -30,7 +30,7 @@ def random_legal_position(tiles):
     return position
 
 
-class Animation:
+class Animationx:
     def __init__(self, size=(100, 100)):
         self.size = size
         self.frames = []
@@ -64,3 +64,23 @@ class Animation:
     def cycle(self, step):
         self.current_frame += step
         self.current_frame = self.current_frame % len(self.frames)
+
+
+class Animation:
+    def __init__(self, image_sequence, position=(0, 0), size=(1, 1), rotation=0, speed=1):
+        self.image_sequence = [pygame.transform.scale(image, size) for image in image_sequence]
+        self.current_frame = 0.0
+        self.position = position
+        self.rotation = rotation
+        self.speed = speed
+        self.is_done = False
+
+    def draw(self, display):
+        i = int(self.current_frame)
+        if self.is_done or len(self.image_sequence) - 1 < i:
+            i = len(self.image_sequence) - 1
+            self.is_done = True
+
+        image = self.image_sequence[i]
+        image = pygame.transform.rotate(image, self.rotation)
+        display.blit(image, self.position)

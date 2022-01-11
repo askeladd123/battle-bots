@@ -89,16 +89,16 @@ def start(real_players=0):
     for player in players:
         player.position = random_legal_position(tiles)
         tiles.register(player.position)
-        player.font = pygame.font.SysFont(None, 24).render(str(players.index(player) + 1), True, pygame.Color(190, 200, 180))
+        player.font = pygame.font.SysFont(None, 24).render(str(players.index(player) + 1), True,
+                                                           pygame.Color(190, 200, 180))
 
-    pang = Animation((tiles.TILE_WIDTH, tiles.TILE_HEIGHT))
-    pang.add_frame("res/pang/0000.png")
-    pang.add_frame("res/pang/0001.png")
-    pang.add_frame("res/pang/0002.png")
-    pang.add_frame("res/pang/0003.png")
-    pang.add_frame("res/pang/0004.png")
-    pang.rotation_offset = -90
-    pang.speed = 0.05
+    pang_image_sequence = [pygame.image.load("res/pang/0000.png"),
+                           pygame.image.load("res/pang/0000.png"),
+                           pygame.image.load("res/pang/0001.png"),
+                           pygame.image.load("res/pang/0002.png"),
+                           pygame.image.load("res/pang/0003.png"),
+                           pygame.image.load("res/pang/0004.png")
+                           ]
 
     bullet_image = pygame.transform.scale(pygame.image.load("res/kule.png"), (tiles.TILE_WIDTH, tiles.TILE_HEIGHT))
     global bullet_positions
@@ -128,7 +128,6 @@ def start(real_players=0):
                     if command is None:
                         continue
                     command = command.lower()
-
 
                     if command in ["up", "down", "right", "left"]:
                         player.move(command)
@@ -179,31 +178,31 @@ def start(real_players=0):
                 player.ammo += 1
                 bullet_positions.remove(player.position)
 
-
             if player.has_shot:
                 impact = player.extract_impact_location()
 
                 impact_locations.append(impact)
 
-                new_pang = copy(pang)
-                new_pang.position = tiles.world_position(impact)
-                new_pang.rotation = player.rotation
-                animations.append(new_pang)
+                animations.append(Animation(pang_image_sequence,
+                                            tiles.world_position(impact),
+                                            (tiles.TILE_WIDTH, tiles.TILE_HEIGHT),
+                                            player.rotation - 90,
+                                            0.05
+                                            ))
 
         for location in impact_locations:
             neighbours = get_neighbours(location)
             neighbours.append(list(location))
             for player in players:
-                if player.position in neighbours:# and 1 < len(players):
+                if player.position in neighbours:  # and 1 < len(players):
                     tiles.unregister(player.position)
                     players.remove(player)
             impact_locations.remove(location)
 
         for animation in animations:
+            animation.draw(screen)
+            animation.current_frame += animation.speed
             if animation.is_done:
                 animations.remove(animation)
-            else:
-                animation.draw_frame(screen)
-                animation.move()
 
         pygame.display.update()
