@@ -4,11 +4,13 @@ import random
 
 @BattleBots.register_ai
 def super_ai(input):
+    return ""
     return "right"
 
 
 @BattleBots.register_ai
 def super_ai(input):
+    return ""
     if input.is_legal("down"):
         return "down"
     else:
