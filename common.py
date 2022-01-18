@@ -30,50 +30,16 @@ def random_legal_position(tiles):
     return position
 
 
-class Animationx:
-    def __init__(self, size=(100, 100)):
-        self.size = size
-        self.frames = []
-        self.speed = 1
-        self.current_frame = 0.0
-        self.position = (0, 0)
-        self.rotation = 0
-        self.rotation_offset = 0
-        self.is_done = False
-
-    def add_frame(self, image_path):
-        self.frames.append(pygame.transform.scale(pygame.image.load(image_path), self.size))
-
-    def draw_frame(self, display):
-        image = self.frames[int(self.current_frame)]
-        image = pygame.transform.rotate(image, self.rotation + self.rotation_offset)
-        display.blit(image, self.position)
-
-    def move(self, step=None):
-        if len(self.frames) - 1 <= self.current_frame:
-            self.is_done = True
-        elif step == None:
-            self.current_frame += self.speed
-        else:
-            self.current_frame += step
-
-    def reset(self):
-        self.is_done = False
-        self.current_frame = 0
-
-    def cycle(self, step):
-        self.current_frame += step
-        self.current_frame = self.current_frame % len(self.frames)
-
-
 class Animation:
     def __init__(self, image_sequence, position=(0, 0), size=(1, 1), rotation=0, speed=1):
-        self.image_sequence = [pygame.transform.scale(image, size) for image in image_sequence]
+        #polymorphic
         self.current_frame = 0.0
-        self.position = position
-        self.rotation = rotation
         self.speed = speed
         self.is_done = False
+
+        self.image_sequence = [pygame.transform.scale(image, size) for image in image_sequence]
+        self.position = position
+        self.rotation = rotation
 
     def draw(self, display):
         i = int(self.current_frame)
@@ -84,3 +50,27 @@ class Animation:
         image = self.image_sequence[i]
         image = pygame.transform.rotate(image, self.rotation)
         display.blit(image, self.position)
+
+
+class AnimationTrail:
+    def __init__(self, base=(0, 0), tip=(4, 4), speed=1):
+        #polymorphic
+        self.current_frame = 0.0
+        self.speed = speed
+        self.is_done = False
+
+        self.base = base
+        self.tip = tip
+        self.frames = 100
+
+    def draw(self, display):
+        i = int(self.current_frame)
+        if self.is_done or self.frames < i:
+            i = self.frames
+            self.is_done = True
+
+        v = 140 / (i * 0.25 + 1)
+        pygame.draw.line(display, (v, v, v), self.base, self.tip, int(8 / (i * 0.25 + 1)))
+        i = int(self.current_frame)
+
+

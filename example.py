@@ -2,21 +2,6 @@ import BattleBots
 import random
 
 
-@BattleBots.register_ai
-def super_ai(input):
-    return ""
-    return "right"
-
-
-@BattleBots.register_ai
-def super_ai(input):
-    return ""
-    if input.is_legal("down"):
-        return "down"
-    else:
-        return "right"
-
-
 b = (0, 0)
 
 
@@ -103,6 +88,53 @@ def super_ai(input):
 
         elif a[1] == b[1]:
             if a[0] < b[0]:
+                command = "shoot right"
+
+            else:
+                command = "shoot left"
+
+    return command
+
+
+d = (0, 0)
+
+
+@BattleBots.register_ai
+def super_ai(input):
+
+    command = ""
+
+    if input.ammo == 0 < len(input.bullet_positions):
+        a = input.position
+        global d
+
+        if a[0] < d[0]:
+            command = "right"
+
+        elif d[0] < a[0]:
+            command = "left"
+
+        elif a[1] < d[1]:
+            command = "down"
+
+        elif d[1] < a[1]:
+            command = "up"
+
+        if not input.is_legal(command):
+            d = input.bullet_positions[random.randint(0, len(input.bullet_positions) - 1)]
+
+    else:
+        a = input.position
+        d = input.enemy_positions[0]
+
+        if a[1] < d[1]:
+            command = "down"
+
+        elif d[1] < a[1]:
+            return "up"
+
+        elif a[1] == d[1]:
+            if a[0] < d[0]:
                 command = "shoot right"
 
             else:
