@@ -1,1 +1,3 @@
-https://github.com/askeladd123/BattleBots/blob/main/.gitignore
+/venv/*
+/__pycache__/*
+/.idea/*
