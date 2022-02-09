@@ -7,6 +7,7 @@ from copy import deepcopy
 from common import get_neighbours
 from common import get_unit_vector
 from common import Animation
+from common import AnimationTrail
 from common import random_legal_position
 from player import Player
 from tiles import Tiles
@@ -34,6 +35,9 @@ class Input:
         for player in players:
             self.enemy_positions.append(player.position)
         self.enemy_positions.remove(self._agent.position)
+
+        self.enemies = len(self.enemy_positions)
+        self.bullets = len(self.bullet_positions)
 
     def is_legal(self, direction):
         """
@@ -80,7 +84,6 @@ def start(real_players=0):
     # ok
     tiles = Tiles(WIDTH, HEIGHT)
     animations = []
-    impact_locations = []
 
     global players
     for function in functions:
@@ -165,15 +168,9 @@ def start(real_players=0):
                     if event.key == pygame.K_h:
                         players[1].shoot()
 
-        screen.fill((30, 20, 20))
-
-        tiles.draw(screen)
-        for position in bullet_positions:
-            screen.blit(bullet_image, tiles.world_position(position))
+        impact_locations = []
 
         for player in players:
-            player.draw(screen)
-
             if player.ammo < player.ammo_max and player.position in bullet_positions:
                 player.ammo += 1
                 bullet_positions.remove(player.position)
@@ -183,6 +180,15 @@ def start(real_players=0):
 
                 impact_locations.append(impact)
 
+                animations.append(AnimationTrail(
+                    (
+                        tiles.world_position_x(player.position[0]) + int(tiles.TILE_WIDTH / 2),
+                        tiles.world_position_y(player.position[1]) + int(tiles.TILE_HEIGHT / 2)
+                    ),
+                    (
+                        tiles.world_position_x(impact[0]) + int(tiles.TILE_WIDTH / 2),
+                        tiles.world_position_y(impact[1]) + int(tiles.TILE_HEIGHT / 2)
+                    ), 0.5))
                 animations.append(Animation(pang_image_sequence,
                                             tiles.world_position(impact),
                                             (tiles.TILE_WIDTH, tiles.TILE_HEIGHT),
@@ -193,16 +199,28 @@ def start(real_players=0):
         for location in impact_locations:
             neighbours = get_neighbours(location)
             neighbours.append(list(location))
+            new_players = []
             for player in players:
-                if player.position in neighbours:  # and 1 < len(players):
+                if player.position in neighbours:
                     tiles.unregister(player.position)
-                    players.remove(player)
-            impact_locations.remove(location)
+                else:
+                    new_players.append(player)
+            players = new_players
+        # DRAW = = =
+        screen.fill((30, 20, 20))
+
+        for position in bullet_positions:
+            screen.blit(bullet_image, tiles.world_position(position))
 
         for animation in animations:
             animation.draw(screen)
             animation.current_frame += animation.speed
             if animation.is_done:
                 animations.remove(animation)
+
+        tiles.draw(screen)
+
+        for player in players:
+            player.draw(screen)
 
         pygame.display.update()
