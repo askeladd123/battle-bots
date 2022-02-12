@@ -127,7 +127,10 @@ def start(real_players=0):
                     counter += 1
                 for player in players:
 
-                    command = player.function(Input(player))
+                    command = None
+                    if 1 < len(players):
+                        command = player.function(Input(player))
+
                     if command is None:
                         continue
                     command = command.lower()
