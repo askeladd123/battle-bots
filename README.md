@@ -48,7 +48,7 @@ Inni funksjonen skriver du instruksjonene til din tank.
 |`gamestate`       |`[[int, ...], ...]`|inneholder id-er for rutene i labyrinten, **forklart under**
 |`is_legal()`      |`boolean`          |sier om en gitt rute er ledig, **forklart under**
 
-#### is_legal
+#### is_legal()
 Gir `true` hvis en gitt rute er ledig. 
 Du spesifiserer hvilken rute ved å gi funksjonen tekst: `"up"`, `"down"`, `"right"`, `"left"`.
 Det betyr at du bare kan sjekke naborutene i labyrinten.
