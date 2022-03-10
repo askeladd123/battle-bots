@@ -69,8 +69,9 @@ Du kan bruke dette til å hente mer informasjon om labyrinten.
 
 ## Return
 Koden min forventer at `super_ai` returnerer instruksjoner som tekst:
-- `"up"`, `"down"`, `"right"`, `"left"`.
-- `"shoot up"`, `"shoot down"`, `"shoot right"`, `"shoot left"`.
+> `"up"`, `"down"`, `"right"`, `"left"`.
+> 
+> `"shoot up"`, `"shoot down"`, `"shoot right"`, `"shoot left"`.
 
 **PASS PÅ:** Hvis din tank står ved en vegg når den skyter, kan den risikere å sprenge seg selv. Det er fordi skuddene har *splash damage*. 
 
