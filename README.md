@@ -1,3 +1,5 @@
+![](res/banner.png)
+
 # BattleBots
 
 BattleBots er lite spill der du skal styre en tank ved å programmere instruksjoner i python. Du kan flytte på deg, skyte andre tanks, og plukke opp skudd. Du kan legge til så mange tanks du vil, og på den måten kan dere spille algoritmene mot hverandre, så mange dere vil. Du kan også styre opp til to tanks med piltastene og "wasd".
