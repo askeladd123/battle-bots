@@ -9,7 +9,8 @@ Spillet er inspirert av oppgavene i et fag jeg hadde, *ikt111*, og følger ca. s
 Altså, er bare source code og bildefiler. Så hvis du klarer å bytte working directory og å sette opp build config, og det ikke funker, så tar jeg 0 ansvar. Men husk å:
 1. klone github repo
 2. velg `example.py` som target *(IDE-spesefikt)*
-3. velg *working directory* der mappen *res* ligger 
+3. installer **pygame**
+4. velg *working directory* der mappen *res* ligger 
 
 ## Setup
 
@@ -52,12 +53,13 @@ Det betyr at du bare kan sjekke naborutene i labyrinten.
 
 #### gamestate
 En **n x m** matrise der **n** er ruter i bredden, og **m** er ruter i høyden. 
-|id|rute  |
-|-|-------|
-|0|tom    |
-|1|mur    |
-|2|spiller|
-|3|ammo?? |
+
+| id |rute  |
+|---|-------|
+| 0 |tom    |
+| 1 |mur    |
+| 2 |spiller|
+| 3 |ammo?? |
 
 Matrisen består av `int`s, der hver rute har en id. 
 Du kan bruke dette til å hente mer informasjon om labyrinten.
