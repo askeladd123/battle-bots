@@ -25,8 +25,8 @@ import BattleBots
 
 @BattleBots.register_ai
 def super_ai(input):
-  ...
-
+  return
+  
 
 BattleBots.start()
 ```
