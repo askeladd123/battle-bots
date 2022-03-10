@@ -4,7 +4,7 @@
 
 BattleBots er lite spill der du skal styre en tank ved å programmere instruksjoner i python. Du kan flytte på deg, skyte andre tanks, og plukke opp skudd. Du kan legge til så mange tanks du vil, og på den måten kan dere spille algoritmene mot hverandre, så mange dere vil. Du kan også styre opp til to tanks med piltastene og "wasd".
 
-Spillet er inspirert av oppgavene i et fag jeg hadde, *ikt111*, og følger ca. samme API.
+Spillet er inspirert av oppgavene i et fag jeg hadde, [ikt111](https://github.com/cair/ikt111.git), og følger ca. samme API.
 
 ## Build
 
@@ -35,7 +35,7 @@ Inni funksjonen skriver du instruksjonene til din tank.
 1. All tilgjengelig informasjon ligger i objektet *input*.
 2. Alle mulige instruksjoner returneres som tekst.
 
-#### Input
+## Input
 
 |**innhold**       |**type**           |**forklaring**
 |------------------|-------------------|-----------
@@ -45,25 +45,26 @@ Inni funksjonen skriver du instruksjonene til din tank.
 |`ammo`            |`int`              |antall ammo i din tank *(max 3)*
 |`bullets`         |`int`              |antall ammo tilstede i labyrinten
 |`bullet_positions`|`[(int, int), ...]`|har x og y-koordinatene til patronene i labyrinten
-|`gamestate`       |`[[int, ...], ...]`|inneholder id-er for rutene i labyrinten, **forklart under**
+|`game_state`      |`[[int, ...], ...]`|inneholder id-er for rutene i labyrinten, **forklart under**
 |`is_legal()`      |`boolean`          |sier om en gitt rute er ledig, **forklart under**
 
-#### is_legal()
+---
+
+> `is_legal()`
 Gir `true` hvis en gitt rute er ledig. 
 Du spesifiserer hvilken rute ved å gi funksjonen tekst: `"up"`, `"down"`, `"right"`, `"left"`.
 Det betyr at du bare kan sjekke naborutene i labyrinten.
 
-#### gamestate
+> `game_state`
 En **n x m** matrise der **n** er ruter i bredden, og **m** er ruter i høyden. 
 
-| id |rute  |
-|---|-------|
-| 0 |tom    |
-| 1 |mur    |
-| 2 |spiller|
-| 3 |ammo?? |
+| id |rute|
+|---|-----|
+| 0 |tom  |
+| 1 |mur  |
+| 2 |tank |
 
-Matrisen består av `int`s, der hver rute har en id. 
+> Matrisen består av `int`s, der hver rute har en id. 
 Du kan bruke dette til å hente mer informasjon om labyrinten.
 
 ## Return
@@ -90,5 +91,7 @@ BattleBots.start(2)
 Parameteret er valgfritt, men bestemmer hvor mange som kan bruke *keyboardet*. 
 - **spiller 1:** piltaster og "space"
 - **spiller 2:** "wasd" og "h"
+
+---
 
 ###### snakkas - Ask Sødal
