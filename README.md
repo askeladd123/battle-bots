@@ -18,7 +18,7 @@ Altså, er bare source code og bildefiler. Så hvis du klarer å bytte working d
 
 Åpne `example.py`. Her ser du hvordan jeg bruker API-en. Slik fungerer den: 
 
-Før du starter spillet, kan du registrere en spiller. Det gjør du ved å skrive `super_ai`-funksjonen. Den ser slik ut:
+Før du starter spillet, kan du registrere en spiller. Det gjør du ved å skrive `super_ai`-funksjonen. Se koden under:
 
 ```python
 import BattleBots
