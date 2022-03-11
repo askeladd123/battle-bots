@@ -10,10 +10,6 @@ def super_ai(input):
 
     command = ""
 
-    print(str(len(input.game_state)))
-    print(str(len(input.game_state[0])))
-
-
     if input.ammo == 0 < len(input.bullet_positions):
         a = input.position
         global b
