@@ -24,17 +24,17 @@ def register_ai(function):
 
 class Input:
     def __init__(self, player):
-        self._agent = player
-        self.position = player.position
+        self._player = player
+        self.position = deepcopy(player.position)
         self.game_state = deepcopy(player.tiles.array)
+        self.ammo = deepcopy(player.ammo)
         self.bullet_positions = deepcopy(bullet_positions)
-        self.ammo = player.ammo
 
         self.enemy_positions = []
         global players
         for player in players:
-            self.enemy_positions.append(player.position)
-        self.enemy_positions.remove(self._agent.position)
+            self.enemy_positions.append(deepcopy(player.position))
+        self.enemy_positions.remove(player.position)
 
         self.enemies = len(self.enemy_positions)
         self.bullets = len(self.bullet_positions)
@@ -45,16 +45,16 @@ class Input:
         :return: True if the given direction has an empty tile
         """
         if direction == "up":
-            return self._agent.tiles.is_empty(self._agent.position[0], self._agent.position[1] - 1)
+            return self._player.tiles.is_empty(self._player.position[0], self._player.position[1] - 1)
 
         if direction == "down":
-            return self._agent.tiles.is_empty(self._agent.position[0], self._agent.position[1] + 1)
+            return self._player.tiles.is_empty(self._player.position[0], self._player.position[1] + 1)
 
         if direction == "right":
-            return self._agent.tiles.is_empty(self._agent.position[0] + 1, self._agent.position[1])
+            return self._player.tiles.is_empty(self._player.position[0] + 1, self._player.position[1])
 
         if direction == "left":
-            return self._agent.tiles.is_empty(self._agent.position[0] - 1, self._agent.position[1])
+            return self._player.tiles.is_empty(self._player.position[0] - 1, self._player.position[1])
 
         return False
 
