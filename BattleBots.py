@@ -12,14 +12,14 @@ from common import random_legal_position
 from player import Player
 from tiles import Tiles
 
-speed = 1000
-functions = []
-players = []
-bullet_positions = []
+pause = 1000  # Sett lavere for høyere tick speed
+_functions = []
+_players = []
+_bullet_positions = []
 
 
 def register_ai(function):
-    functions.append(function)
+    _functions.append(function)
 
 
 class Input:
@@ -28,11 +28,11 @@ class Input:
         self.position = deepcopy(player.position)
         self.game_state = deepcopy(player.tiles.array)
         self.ammo = deepcopy(player.ammo)
-        self.bullet_positions = deepcopy(bullet_positions)
+        self.bullet_positions = deepcopy(_bullet_positions)
 
         self.enemy_positions = []
-        global players
-        for player in players:
+        global _players
+        for player in _players:
             self.enemy_positions.append(deepcopy(player.position))
         self.enemy_positions.remove(player.position)
 
@@ -60,13 +60,13 @@ class Input:
 
 
 def start(real_players=0):
-    if len(functions) == 0:
+    if len(_functions) == 0:
         exit("You need at least one ai to play... Make one by overriding this function:\n"
              "@BattleBots.register_ai\n"
              "def super_ai(input, output):")
 
-    if len(functions) < real_players:
-        real_players = len(functions)
+    if len(_functions) < real_players:
+        real_players = len(_functions)
 
     if 2 < real_players:
         print("Can't have more than 2 real players, btw")
@@ -74,7 +74,7 @@ def start(real_players=0):
 
     pygame.init()
     pygame.display.set_caption("BattleBots")
-    pygame.time.set_timer(pygame.USEREVENT, speed)
+    pygame.time.set_timer(pygame.USEREVENT, pause)
 
     # create a surface on screen that has the size of 240 x 180
     HEIGHT = 640
@@ -85,14 +85,14 @@ def start(real_players=0):
     tiles = Tiles(WIDTH, HEIGHT)
     animations = []
 
-    global players
-    for function in functions:
-        players.append(Player(function, tiles))
+    global _players
+    for function in _functions:
+        _players.append(Player(function, tiles))
 
-    for player in players:
+    for player in _players:
         player.position = random_legal_position(tiles)
         tiles.register(player.position)
-        player.font = pygame.font.SysFont(None, 24).render(str(players.index(player) + 1), True,
+        player.font = pygame.font.SysFont(None, 24).render(str(_players.index(player) + 1), True,
                                                            pygame.Color(190, 200, 180))
 
     pang_image_sequence = [pygame.image.load("res/pang/0000.png"),
@@ -104,8 +104,8 @@ def start(real_players=0):
                            ]
 
     bullet_image = pygame.transform.scale(pygame.image.load("res/kule.png"), (tiles.TILE_WIDTH, tiles.TILE_HEIGHT))
-    global bullet_positions
-    bullet_positions = [random_legal_position(tiles)]
+    global _bullet_positions
+    _bullet_positions = [random_legal_position(tiles)]
     counter = 0
 
     # main loop
@@ -121,14 +121,14 @@ def start(real_players=0):
             if event.type == pygame.USEREVENT:
                 if 8 < counter:
                     counter = 0
-                    if len(bullet_positions) < len(players):
-                        bullet_positions.append(random_legal_position(tiles))
+                    if len(_bullet_positions) < len(_players):
+                        _bullet_positions.append(random_legal_position(tiles))
                 else:
                     counter += 1
-                for player in players:
+                for player in _players:
 
                     command = None
-                    if 1 < len(players):
+                    if 1 < len(_players):
                         command = player.function(Input(player))
 
                     if command is None:
@@ -147,36 +147,36 @@ def start(real_players=0):
                                 break
 
             if event.type == pygame.KEYDOWN:
-                if 0 < len(players) and (real_players == 1 or real_players == 2):
+                if 0 < len(_players) and (real_players == 1 or real_players == 2):
                     if event.key == pygame.K_UP:
-                        players[0].move("up")
+                        _players[0].move("up")
                     if event.key == pygame.K_DOWN:
-                        players[0].move("down")
+                        _players[0].move("down")
                     if event.key == pygame.K_LEFT:
-                        players[0].move("left")
+                        _players[0].move("left")
                     if event.key == pygame.K_RIGHT:
-                        players[0].move("right")
+                        _players[0].move("right")
                     if event.key == pygame.K_SPACE:
-                        players[0].shoot()
+                        _players[0].shoot()
 
-                if real_players == 2 and 1 < len(players):
+                if real_players == 2 and 1 < len(_players):
                     if event.key == pygame.K_w:
-                        players[1].move("up")
+                        _players[1].move("up")
                     if event.key == pygame.K_s:
-                        players[1].move("down")
+                        _players[1].move("down")
                     if event.key == pygame.K_a:
-                        players[1].move("left")
+                        _players[1].move("left")
                     if event.key == pygame.K_d:
-                        players[1].move("right")
+                        _players[1].move("right")
                     if event.key == pygame.K_h:
-                        players[1].shoot()
+                        _players[1].shoot()
 
         impact_locations = []
 
-        for player in players:
-            if player.ammo < player.ammo_max and player.position in bullet_positions:
+        for player in _players:
+            if player.ammo < player.ammo_max and player.position in _bullet_positions:
                 player.ammo += 1
-                bullet_positions.remove(player.position)
+                _bullet_positions.remove(player.position)
 
             if player.has_shot:
                 impact = player.extract_impact_location()
@@ -203,16 +203,16 @@ def start(real_players=0):
             neighbours = get_neighbours(location)
             neighbours.append(list(location))
             new_players = []
-            for player in players:
+            for player in _players:
                 if player.position in neighbours:
                     tiles.unregister(player.position)
                 else:
                     new_players.append(player)
-            players = new_players
+            _players = new_players
         # DRAW = = =
         screen.fill((30, 20, 20))
 
-        for position in bullet_positions:
+        for position in _bullet_positions:
             screen.blit(bullet_image, tiles.world_position(position))
 
         for animation in animations:
@@ -223,7 +223,7 @@ def start(real_players=0):
 
         tiles.draw(screen)
 
-        for player in players:
+        for player in _players:
             player.draw(screen)
 
         pygame.display.update()
