@@ -42,7 +42,7 @@ Inni funksjonen skriver du instruksjonene til din tank.
 |`position`        |`(int, int)`       |din tank sine x og y-koordinater
 |`enemy_positions` |`[(int, int), ...]`|har x og y-koordinater til alle andre tanks
 |`enemies`         |`int`              |antall andre tanks
-|`ammo`            |`int`              |antall ammo i din tank *(max 3)*
+|`ammo`            |`int`              |antall ammo i din tank *(max 1)*
 |`bullets`         |`int`              |antall ammo tilstede i labyrinten
 |`bullet_positions`|`[(int, int), ...]`|har x og y-koordinatene til patronene i labyrinten
 |`game_state`      |`[[int, ...], ...]`|inneholder id-er for rutene i labyrinten, **forklart under**
