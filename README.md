@@ -9,10 +9,10 @@ Spillet er inspirert av oppgavene i et fag jeg hadde, [ikt111](https://github.co
 ## Build
 
 Det er flere måter å kjøre python scripts på, men noen ting kan skape problemer:
-* python må være installert
-* **pygame** må være installert
+* *python* må være installert
+* *pygame* må være installert
   * hvis du bruker *venv*: husk å installere med riktig *pip*
-* velg *working directory* der mappen *res* ligger 
+* hvis du bruker en *IDE*: velg *working directory* der mappen *res* ligger 
 
 ## Setup
 
