@@ -8,11 +8,11 @@ Spillet er inspirert av oppgavene i et fag jeg hadde, [ikt111](https://github.co
 
 ## Build
 
-Altså, er bare source code og bildefiler. Så hvis du klarer å bytte working directory og å sette opp build config, og det ikke funker, så tar jeg 0 ansvar. Men husk å:
-1. klone github repo
-2. velg `example.py` som target *(IDE-spesefikt)*
-3. installer **pygame**
-4. velg *working directory* der mappen *res* ligger 
+Det er flere måter å kjøre python scripts på, men noen ting kan skape problemer:
+* python må være installert
+* **pygame** må være installert
+  * hvis du bruker *venv*: husk å installere med riktig *pip*
+* velg *working directory* der mappen *res* ligger 
 
 ## Setup
 
